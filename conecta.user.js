@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          Tweaks Lumera BETA
-// @version       0.0.2
+// @version       0.0.3
 // @namespace     lucsenl
 // @description   Small adjustments to the CEC/RN, including updating title from "Detalhes" tab.
 // @author        lucsenl
