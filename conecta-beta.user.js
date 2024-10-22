@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name          Tweaks Lumera BETA
-// @version       0.0.4
+// @name          Tweaks Lumera (BETA)
+// @version       0.1-BETA
 // @namespace     lucsenl
 // @description   Small adjustments to the CEC/RN, including updating title from "Detalhes" tab.
 // @author        lucsenl
@@ -12,8 +12,6 @@
 // @icon          https://s3.amazonaws.com/movidesk-files/B71B720D3B852CFC60CDED5090E658E3
 // @license       0BSD
 // @copyright     2024, lucsenl
-// @updateURL     https://openuserjs.org/meta/lucsenl/Tweaks_Lumera_BETA.meta.js
-// @downloadURL   https://openuserjs.org/install/lucsenl/Tweaks_Lumera_BETA.user.js
 // ==/UserScript==
 
 (function() {
