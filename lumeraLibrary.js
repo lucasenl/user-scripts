@@ -1,15 +1,71 @@
 (function() {
     'use strict';
 
-    const LumeraLibrary = {
-        FIRST_LOAD_KEY: 'firstLoadPedido',
-        abaDetalhesAcessada: false,
+    const FIRST_LOAD_KEY = 'firstLoadPedido'; // Chave para localStorage
+    let abaDetalhesAcessada = false; // Controle de acesso à aba "Detalhes"
+    let tituloModificado = false; // Controle se o título já foi modificado
 
-        isNumeric(value) {
-            return !isNaN(value) && !isNaN(parseFloat(value));
-        },
+    // Função para verificar se uma string é numérica
+    function isNumeric(value) {
+        return !isNaN(value) && !isNaN(parseFloat(value));
+    }
 
-        modifyTitle() {
+    // Função para modificar o título
+    function modifyTitle() {
+        const valorElement1 = document.evaluate(
+            '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div[3]/div[2]/vaadin-form-layout/div[3]/div/label[1]',
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+        ).singleNodeValue;
+
+        const valorElement2 = document.evaluate(
+            '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div[4]/div[2]/vaadin-form-layout/div[3]/div/label[1]',
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+        ).singleNodeValue;
+
+        let valores = [];
+        if (valorElement1 && isNumeric(valorElement1.textContent.trim())) {
+            valores.push(valorElement1.textContent.trim());
+        }
+        if (valorElement2 && isNumeric(valorElement2.textContent.trim())) {
+            valores.push(valorElement2.textContent.trim());
+        }
+
+        const tituloElement = document.evaluate(
+            '/html/body/div[2]/div[2]/div[2]/div[1]/div/div[1]/h5',
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+        ).singleNodeValue;
+
+        // Verifica se o título foi encontrado e faz a substituição
+        if (tituloElement && valores.length > 0) {
+            const tituloAtual = tituloElement.textContent;
+            const novoTitulo = tituloAtual.replace(/Inteiro Teor de Matrícula/, `Inteiro Teor Matrícula nº ${valores.join(', ')}`);
+            if (tituloAtual !== novoTitulo) {
+                tituloElement.textContent = novoTitulo; // Atualiza o texto do título
+                tituloModificado = true; // Marca que o título foi modificado
+            }
+        }
+    }
+
+    // Função para fixar o título
+    function fixTitle() {
+        const tituloElement = document.evaluate(
+            '/html/body/div[2]/div[2]/div[2]/div[1]/div/div[1]/h5',
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+        ).singleNodeValue;
+
+        if (tituloElement && tituloModificado) {
             const valorElement1 = document.evaluate(
                 '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div[3]/div[2]/vaadin-form-layout/div[3]/div/label[1]',
                 document,
@@ -27,77 +83,71 @@
             ).singleNodeValue;
 
             let valores = [];
-            if (valorElement1 && this.isNumeric(valorElement1.textContent.trim())) {
+            if (valorElement1 && isNumeric(valorElement1.textContent.trim())) {
                 valores.push(valorElement1.textContent.trim());
             }
-            if (valorElement2 && this.isNumeric(valorElement2.textContent.trim())) {
+            if (valorElement2 && isNumeric(valorElement2.textContent.trim())) {
                 valores.push(valorElement2.textContent.trim());
             }
 
-            const tituloElement = document.evaluate(
-                '/html/body/div[2]/div[2]/div[2]/div[1]/div/div[1]/h5',
-                document,
-                null,
-                XPathResult.FIRST_ORDERED_NODE_TYPE,
-                null
-            ).singleNodeValue;
-
-            if (tituloElement && valores.length > 0) {
-                const tituloAtual = tituloElement.textContent;
-                const novoTitulo = `Inteiro Teor Matrícula nº ${valores.join(', ')}`;
-                if (tituloAtual.includes("Inteiro Teor de Matrícula")) {
-                    tituloElement.textContent = tituloAtual.replace(/Inteiro Teor de Matrícula/, novoTitulo);
-                } else {
-                    tituloElement.textContent = `${tituloAtual} - ${novoTitulo}`;
-                }
+            const novoTitulo = `Inteiro Teor Matrícula nº ${valores.join(', ')}`;
+            if (tituloElement.textContent !== novoTitulo) {
+                tituloElement.textContent = novoTitulo; // Reafirma o título modificado
             }
-        },
-
-        checkDetalhesTab() {
-            const detalhesTab = document.querySelector('vaadin-tab[aria-selected="false"]:nth-child(2)');
-            if (detalhesTab && !this.abaDetalhesAcessada) {
-                detalhesTab.click();
-                this.abaDetalhesAcessada = true;
-
-                setTimeout(() => {
-                    this.modifyTitle();
-                }, 1000);
-            }
-        },
-
-        main() {
-            if (window.location.href.includes('/pedido') && document.body.textContent.includes("Inteiro Teor")) {
-                if (!localStorage.getItem(this.FIRST_LOAD_KEY)) {
-                    localStorage.setItem(this.FIRST_LOAD_KEY, 'true');
-                }
-                this.checkDetalhesTab();
-            } else {
-                this.abaDetalhesAcessada = false;
-                localStorage.removeItem(this.FIRST_LOAD_KEY);
-            }
-        },
-
-        init() {
-            this.main();
-
-            const observer = new MutationObserver(() => {
-                this.main();
-            });
-            observer.observe(document.body, { childList: true, subtree: true });
-
-            window.addEventListener('popstate', () => this.main());
-            window.addEventListener('hashchange', () => this.main());
         }
-    };
+    }
+
+    // Função para verificar quando a aba "Detalhes" foi acessada
+    function checkDetalhesTab() {
+        const detalhesTab = document.querySelector('vaadin-tab[aria-selected="false"]:nth-child(2)');
+        if (detalhesTab && !abaDetalhesAcessada) {
+            detalhesTab.click(); // Clica na aba "Detalhes"
+            abaDetalhesAcessada = true;
+
+            setTimeout(() => {
+                modifyTitle(); // Modifica o título
+            }, 1000);
+        }
+    }
+
+    // Função principal para verificar a URL
+    function main() {
+        if (window.location.href.includes('/pedido')) {
+            if (!localStorage.getItem(FIRST_LOAD_KEY)) {
+                localStorage.setItem(FIRST_LOAD_KEY, 'true');
+                setTimeout(() => {
+                    location.reload(); // Recarrega a página
+                }, 500); // Recarrega após meio segundo
+                return; // Interrompe a execução
+            }
+            checkDetalhesTab();
+        } else {
+            abaDetalhesAcessada = false; // Reseta a variável quando não está na página de pedidos
+            localStorage.removeItem(FIRST_LOAD_KEY); // Reseta a chave se sair da página
+            tituloModificado = false; // Reseta a variável de título modificado
+        }
+    }
+
+    // Inicializa o script
+    function init() {
+        main();
+
+        // Observa mudanças no DOM
+        const observer = new MutationObserver(() => {
+            main(); // Executa a função principal em mudanças
+            fixTitle(); // Reafirma o título se necessário
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // Escuta eventos de histórico para mudanças de URL
+        window.addEventListener('popstate', main);
+        window.addEventListener('hashchange', main);
+    }
 
     // Aguarda o carregamento completo do body antes de iniciar
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => LumeraLibrary.init());
+        document.addEventListener('DOMContentLoaded', init);
     } else {
-        LumeraLibrary.init();
+        init();
     }
-
-    // Expor a biblioteca
-    window.LumeraLibrary = LumeraLibrary;
-
 })();
