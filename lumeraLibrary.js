@@ -1,4 +1,4 @@
-// rev. no fix title
+// rev. fix title
 
 (function() {
     'use strict';
@@ -51,10 +51,45 @@
         }
     }
 
+    // Função para reafirmar o título
+    function fixTitle() {
+        const valorElement1 = document.evaluate(
+            '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div[3]/div[2]/vaadin-form-layout/div[3]/div/label[1]',
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+        ).singleNodeValue;
+
+        const valorElement2 = document.evaluate(
+            '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div[4]/div[2]/vaadin-form-layout/div[3]/div/label[1]',
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+        ).singleNodeValue;
+
+        let valores = [];
+        if (valorElement1 && isNumeric(valorElement1.textContent.trim())) {
+            valores.push(valorElement1.textContent.trim());
+        }
+        if (valorElement2 && isNumeric(valorElement2.textContent.trim())) {
+            valores.push(valorElement2.textContent.trim());
+        }
+
+        const tituloElement = document.querySelector("body > div.root > div.root__row > div.root__column > div.app-header-inner > div > div.app-bar__container > h5");
+        if (tituloElement && tituloModificado) {
+            const novoTitulo = `Inteiro Teor Matrícula nº ${valores.join(', ')}`;
+            if (tituloElement.textContent !== novoTitulo) {
+                tituloElement.textContent = novoTitulo; // Reafirma o título modificado
+                console.log("Título reafirmado:", novoTitulo); // Log para depuração
+            }
+        }
+    }
+
     // Função para verificar se o título contém "Inteiro Teor de Matrícula"
     function titleContainsInteiroTeor() {
         const tituloElement = document.querySelector("body > div.root > div.root__row > div.root__column > div.app-header-inner > div > div.app-bar__container > h5");
-        
         const contains = tituloElement && tituloElement.textContent.includes('Inteiro Teor de Matrícula');
         console.log("Título contém 'Inteiro Teor de Matrícula':", contains); // Log para depuração
         return contains;
@@ -109,9 +144,9 @@
 
     // Inicializa o script
     function init() {
-        // Aguarda até que o DOM esteja totalmente carregado
         const observer = new MutationObserver(() => {
             main(); // Executa a função principal em mudanças
+            fixTitle(); // Reafirma o título se necessário
         });
 
         // Observa o body para quaisquer mudanças
