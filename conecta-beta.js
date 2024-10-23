@@ -8,6 +8,7 @@
 // @match         *://cidf.lumera.com.br/*
 // @grant         none
 // @inject-into   page
+// @run-at        document-idle
 // @license       0BSD
 // ==/UserScript==
 
