@@ -1,3 +1,5 @@
+// rev.-0.1
+
 (function() {
     'use strict';
 
@@ -44,18 +46,24 @@
             null
         ).singleNodeValue;
 
-        // Verifica se o título foi encontrado e faz a substituição
-        if (tituloElement && valores.length > 0) {
+        // Verifica se o título contém "Inteiro Teor de Matrícula"
+        if (tituloElement && tituloElement.textContent.includes("Inteiro Teor de Matrícula") && valores.length > 0) {
             const tituloAtual = tituloElement.textContent;
             const novoTitulo = tituloAtual.replace(/Inteiro Teor de Matrícula/, `Inteiro Teor Matrícula nº ${valores.join(', ')}`);
             if (tituloAtual !== novoTitulo) {
                 tituloElement.textContent = novoTitulo; // Atualiza o texto do título
                 tituloModificado = true; // Marca que o título foi modificado
+
+                // Volta para a aba "Andamentos"
+                const andamentosTab = document.querySelector("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > vaadin-tabs > vaadin-tab:nth-child(1)");
+                if (andamentosTab) {
+                    andamentosTab.click(); // Clica na aba "Andamentos"
+                }
             }
         }
     }
 
-    // Função para fixar o título
+    // Função para fixar o título se necessário
     function fixTitle() {
         const tituloElement = document.evaluate(
             '/html/body/div[2]/div[2]/div[2]/div[1]/div/div[1]/h5',
@@ -65,7 +73,7 @@
             null
         ).singleNodeValue;
 
-        if (tituloElement && tituloModificado) {
+        if (tituloElement && tituloElement.textContent.includes("Inteiro Teor de Matrícula") && tituloModificado) {
             const valorElement1 = document.evaluate(
                 '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div[3]/div[2]/vaadin-form-layout/div[3]/div/label[1]',
                 document,
@@ -99,26 +107,47 @@
 
     // Função para verificar quando a aba "Detalhes" foi acessada
     function checkDetalhesTab() {
-        const detalhesTab = document.querySelector('vaadin-tab[aria-selected="false"]:nth-child(2)');
-        if (detalhesTab && !abaDetalhesAcessada) {
-            detalhesTab.click(); // Clica na aba "Detalhes"
-            abaDetalhesAcessada = true;
+        const tituloElement = document.evaluate(
+            '/html/body/div[2]/div[2]/div[2]/div[1]/div/div[1]/h5',
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+        ).singleNodeValue;
 
-            setTimeout(() => {
-                modifyTitle(); // Modifica o título
-            }, 1000);
+        // Verifica se o título contém "Inteiro Teor de Matrícula" antes de clicar na aba "Detalhes"
+        if (tituloElement && tituloElement.textContent.includes("Inteiro Teor de Matrícula") && !abaDetalhesAcessada) {
+            const detalhesTab = document.querySelector('vaadin-tab[aria-selected="false"]:nth-child(2)');
+            if (detalhesTab) {
+                detalhesTab.click(); // Clica na aba "Detalhes"
+                abaDetalhesAcessada = true;
+
+                setTimeout(() => {
+                    modifyTitle(); // Modifica o título após clicar
+                }, 1000);
+            }
         }
     }
 
     // Função principal para verificar a URL
     function main() {
         if (window.location.href.includes('/pedido')) {
+            const tituloElement = document.evaluate(
+                '/html/body/div[2]/div[2]/div[2]/div[1]/div/div[1]/h5',
+                document,
+                null,
+                XPathResult.FIRST_ORDERED_NODE_TYPE,
+                null
+            ).singleNodeValue;
+
             if (!localStorage.getItem(FIRST_LOAD_KEY)) {
-                localStorage.setItem(FIRST_LOAD_KEY, 'true');
-                setTimeout(() => {
-                    location.reload(); // Recarrega a página
-                }, 500); // Recarrega após meio segundo
-                return; // Interrompe a execução
+                if (tituloElement && tituloElement.textContent.includes("Inteiro Teor de Matrícula")) {
+                    localStorage.setItem(FIRST_LOAD_KEY, 'true');
+                    setTimeout(() => {
+                        location.reload(); // Recarrega a página se o título estiver correto
+                    }, 500); // Recarrega após meio segundo
+                    return; // Interrompe a execução
+                }
             }
             checkDetalhesTab();
         } else {
