@@ -2,7 +2,7 @@
 // @name          Tweaks Lumera (BETA)
 // @version       0.1-BETA
 // @namespace     lucsenl
-// @description   Small adjustments to the CEC/RN, including updating title from "Detalhes" tab.
+// @description   Small adjustments to the CEC/RN.
 // @author        lucsenl
 // @include       *://cidf.lumera.com.br/*
 // @match         *://cidf.lumera.com.br/*
@@ -12,6 +12,8 @@
 // @icon          https://s3.amazonaws.com/movidesk-files/B71B720D3B852CFC60CDED5090E658E3
 // @license       0BSD
 // @copyright     2024, lucsenl
+// @downloadURL   https://raw.githubusercontent.com/lucsenl/userscript/refs/heads/master/conecta-beta.user.js
+// @updateURL     https://raw.githubusercontent.com/lucsenl/userscript/refs/heads/master/conecta-beta.user.js
 // ==/UserScript==
 
 (function() {
@@ -23,9 +25,9 @@
             --lumo-size-xl: 3.0rem;
             --lumo-size-m: 2.1rem;
             --lumo-space-s: 0.0rem;
-            --transition-duration-s: 10ms;
-            --transition-duration-m: 10ms;
-            --transition-duration-l: 10ms;
+            --transition-duration-s: 0.5ms;
+            --transition-duration-m: 0.5ms;
+            --transition-duration-l: 0.5ms;
         }
         body[theme~="dark"] {
             --lumo-primary-text-color: hsl(216, 92%, 66%);
@@ -94,7 +96,7 @@
                 // Verifica se o título foi encontrado e faz a substituição
                 if (tituloElement && valores.length > 0) {
                     const tituloAtual = tituloElement.textContent;
-                    const novoTitulo = tituloAtual.replace(/Inteiro Teor de Matrícula/, `Inteiro Teor de Matrícula nº ${valores.join(', ')}`);
+                    const novoTitulo = tituloAtual.replace(/Inteiro Teor de Matrícula/, `Inteiro Teor Matrícula nº ${valores.join(', ')}`);
                     tituloElement.textContent = novoTitulo; // Atualiza o texto do título
                 }
             }, 500); // Espera 500ms para garantir que o conteúdo esteja carregado
