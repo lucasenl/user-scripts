@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          Pedido Lumera (BETA)
-// @version       0.3
+// @version       0.4
 // @namespace     lucsenl
 // @description   Script específico para ajuste de título na aba "Pedido".
 // @author        lucsenl
