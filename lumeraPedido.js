@@ -64,12 +64,15 @@
         if (window.location.href.includes('/pedido')) {
             if (!localStorage.getItem(FIRST_LOAD_KEY)) {
                 localStorage.setItem(FIRST_LOAD_KEY, 'true');
-                location.reload();
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
                 return;
             }
             checkDetalhesTab();
         } else {
             abaDetalhesAcessada = false;
+            localStorage.removeItem(FIRST_LOAD_KEY);
         }
     }
 
