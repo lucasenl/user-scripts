@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          Tweaks Lumera BETA
-// @version       0.0.2
+// @version       0.0.3
 // @namespace     lucsenl
 // @description   Small adjustments to the CEC/RN.
 // @author        lucsenl
@@ -102,7 +102,7 @@
                 removeHiddenElement();
                 moverConteudo();
                 returnToAndamentosTab();
-            }, 1000);
+            }, 500); // Diminui o tempo de espera para 500ms
         }
     }
 
