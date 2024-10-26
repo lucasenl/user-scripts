@@ -63,7 +63,6 @@
 
             if (tituloAtual !== novoTitulo) {
                 tituloElement.textContent = novoTitulo;
-                console.log("Título modificado:", novoTitulo); // Log para depuração
             }
         }
     }
@@ -79,7 +78,6 @@
                 modifyTitle(); // Modifica o título após acessar a aba
                 returnToInitialTab(); // Retorna à aba inicial após modificar o título
             }, 1000);
-            console.log("Aba 'Detalhes' acessada."); // Log para depuração
         }
     }
 
@@ -90,14 +88,12 @@
         );
         if (initialTab) {
             initialTab.click(); // Clica na aba inicial
-            console.log("Retornou à aba inicial."); // Log para depuração
         }
     }
 
     // Função principal
     function main() {
         if (window.location.href.includes('/pedido')) {
-            console.log("URL contém '/pedido'."); // Log para depuração
             checkDetalhesTab(); // Verifica se a aba "Detalhes" foi acessada
         } else {
             abaDetalhesAcessada = false; // Reseta a variável quando não está na página de pedidos
