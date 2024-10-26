@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         Mover Elemento Após Detalhes
 // @namespace    http://tampermonkey.net/
-// @version      0.0.3
+// @version      0.0.4
 // @description  Move conteúdo de uma aba para outra após clicar em detalhes, removendo elementos ocultos
 // @match        https://cidf.lumera.com.br/*
 // @grant        none
+// @require      https://cdnjs.cloudflare.com/ajax/libs/cash/8.1.5/cash.min.js
 // @downloadURL  https://raw.githubusercontent.com/lucsenl/userscript/refs/heads/beta/lumera-beta.user.js
 // @updateURL    https://raw.githubusercontent.com/lucsenl/userscript/refs/heads/beta/lumera-beta.user.js
 // ==/UserScript==
@@ -66,19 +67,19 @@
 
     // Função para mover o conteúdo
     function moverConteudo() {
-        const origem = document.querySelector("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(2)");
-        const destino = document.querySelector("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(1)");
+        const origem = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(2)");
+        const destino = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(1)");
 
-        if (origem && destino) {
-            destino.appendChild(origem.firstChild); // Move o primeiro filho do conteúdo de origem para o destino
+        if (origem.length > 0 && destino.length > 0) {
+            destino.append(origem.children().first()); // Move o primeiro filho do conteúdo de origem para o destino
         }
     }
 
     // Função para verificar quando a aba "Detalhes" foi acessada
     function checkDetalhesTab() {
-        const detalhesTab = document.querySelector('vaadin-tab[aria-selected="false"]:nth-child(2)');
-        if (detalhesTab && !abaDetalhesAcessada) {
-            detalhesTab.click(); // Clica na aba "Detalhes"
+        const detalhesTab = $("vaadin-tab[aria-selected='false']:nth-child(2)"); // Seletor ajustado para Cash
+        if (detalhesTab.length > 0 && !abaDetalhesAcessada) {
+            detalhesTab[0].click(); // Clica na aba "Detalhes"
             abaDetalhesAcessada = true;
 
             setTimeout(() => {
@@ -91,9 +92,9 @@
 
     // Função para retornar à aba "Andamentos"
     function returnToAndamentosTab() {
-        const andamentosTab = document.querySelector("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > vaadin-tabs > vaadin-tab:nth-child(1)"); // Ajuste conforme necessário
-        if (andamentosTab) {
-            andamentosTab.click(); // Clica na aba "Andamentos"
+        const andamentosTab = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > vaadin-tabs > vaadin-tab:nth-child(1)");
+        if (andamentosTab.length > 0) {
+            andamentosTab[0].click(); // Clica na aba "Andamentos"
         }
     }
 
