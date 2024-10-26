@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Tweaks Lumera Beta
+// @name         Mover Elemento Após Detalhes
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      0.0.1
 // @description  Move conteúdo de uma aba para outra após clicar em detalhes, removendo elementos ocultos
 // @match        https://cidf.lumera.com.br/*
 // @grant        none
