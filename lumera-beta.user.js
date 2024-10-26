@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Mover Elemento Após Detalhes
 // @namespace    http://tampermonkey.net/
-// @version      0.0.4
+// @version      0.0.5
 // @description  Move conteúdo de uma aba para outra após clicar em detalhes, removendo elementos ocultos
 // @match        https://cidf.lumera.com.br/*
 // @grant        none
@@ -34,34 +34,23 @@
         const browser = detectBrowser();
 
         if (browser === "Firefox") {
-            hiddenElement = document.evaluate(
-                '/html/body/div[5]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]',
-                document,
-                null,
-                XPathResult.FIRST_ORDERED_NODE_TYPE,
-                null
-            ).singleNodeValue;
+            hiddenElement = $("body > div:nth-child(6) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)");
         } else if (browser === "Chrome" || browser === "Edge") {
-            hiddenElement = document.evaluate(
-                '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]',
-                document,
-                null,
-                XPathResult.FIRST_ORDERED_NODE_TYPE,
-                null
-            ).singleNodeValue;
+            hiddenElement = $("body > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)");
         }
 
-        if (hiddenElement) {
-            hiddenElement.style.display = 'flex'; // Muda para display: flex
-            hiddenElement.style.flexDirection = 'column'; // Define a direção do flex
-            hiddenElement.style.visibility = 'visible'; // Garante que o elemento é visível
-            hiddenElement.style.opacity = '1'; // Garante que a opacidade é 1
-            hiddenElement.removeAttribute('hidden'); // Remove o atributo hidden
+        if (hiddenElement.length > 0) {
+            hiddenElement.css({
+                display: 'flex', // Muda para display: flex
+                flexDirection: 'column', // Define a direção do flex
+                visibility: 'visible', // Garante que o elemento é visível
+                opacity: '1' // Garante que a opacidade é 1
+            }).removeAttr('hidden'); // Remove o atributo hidden
 
             // Força a aplicação dos estilos
-            hiddenElement.style.setProperty('display', 'flex', 'important');
-            hiddenElement.style.setProperty('visibility', 'visible', 'important');
-            hiddenElement.style.setProperty('opacity', '1', 'important');
+            hiddenElement[0].style.setProperty('display', 'flex', 'important');
+            hiddenElement[0].style.setProperty('visibility', 'visible', 'important');
+            hiddenElement[0].style.setProperty('opacity', '1', 'important');
         }
     }
 
