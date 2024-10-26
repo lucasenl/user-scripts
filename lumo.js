@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Atualiza Título de Matrícula
+// @name         lumo
 // @include      *://cidf.lumera.com.br/*
 // @match        *://cidf.lumera.com.br/*
 // @version      0.1
