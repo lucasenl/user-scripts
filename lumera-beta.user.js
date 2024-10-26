@@ -1,13 +1,10 @@
 // ==UserScript==
 // @name         Mover Elemento Após Detalhes
 // @namespace    http://tampermonkey.net/
-// @version      0.0.1
+// @version      0.0.2
 // @description  Move conteúdo de uma aba para outra após clicar em detalhes, removendo elementos ocultos
 // @match        https://cidf.lumera.com.br/*
 // @grant        none
-// @downloadURL  https://raw.githubusercontent.com/lucsenl/userscript/refs/heads/beta/lumera-beta.user.js
-// @updateURL    https://raw.githubusercontent.com/lucsenl/userscript/refs/heads/beta/lumera-beta.user.js
-
 // ==/UserScript==
 
 (function() {
@@ -15,11 +12,25 @@
 
     let abaDetalhesAcessada = false; // Controle de acesso à aba "Detalhes"
 
+    // Função para detectar o navegador
+    function detectBrowser() {
+        const userAgent = navigator.userAgent;
+        if (userAgent.indexOf("Firefox") !== -1) {
+            return "Firefox";
+        } else if (userAgent.indexOf("Edg") !== -1 || userAgent.indexOf("Edge") !== -1) { // Edge
+            return "Edge";
+        } else if (userAgent.indexOf("Chrome") !== -1) {
+            return "Chrome"; // Chrome
+        }
+        return "Other";
+    }
+
     // Função para remover o estilo hidden
     function removeHiddenElement() {
         let hiddenElement;
-        // Checa se está no Firefox ou Chrome
-        if (navigator.userAgent.indexOf("Firefox") !== -1) {
+        const browser = detectBrowser();
+
+        if (browser === "Firefox") {
             hiddenElement = document.evaluate(
                 '/html/body/div[5]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]',
                 document,
@@ -27,7 +38,7 @@
                 XPathResult.FIRST_ORDERED_NODE_TYPE,
                 null
             ).singleNodeValue;
-        } else if (navigator.userAgent.indexOf("Chrome") !== -1) {
+        } else if (browser === "Chrome" || browser === "Edge") {
             hiddenElement = document.evaluate(
                 '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]',
                 document,
@@ -48,8 +59,6 @@
             hiddenElement.style.setProperty('display', 'flex', 'important');
             hiddenElement.style.setProperty('visibility', 'visible', 'important');
             hiddenElement.style.setProperty('opacity', '1', 'important');
-
-            console.log("Elemento oculto agora visível com flex-direction: column.");
         }
     }
 
@@ -60,7 +69,6 @@
 
         if (origem && destino) {
             destino.appendChild(origem.firstChild); // Move o primeiro filho do conteúdo de origem para o destino
-            console.log("Conteúdo movido de 'Detalhes' para 'Andamentos'.");
         }
     }
 
@@ -76,7 +84,6 @@
                 moverConteudo(); // Move o conteúdo
                 returnToAndamentosTab(); // Retorna à aba "Andamentos"
             }, 1000);
-            console.log("Aba 'Detalhes' acessada."); // Log para depuração
         }
     }
 
@@ -85,14 +92,12 @@
         const andamentosTab = document.querySelector("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > vaadin-tabs > vaadin-tab:nth-child(1)"); // Ajuste conforme necessário
         if (andamentosTab) {
             andamentosTab.click(); // Clica na aba "Andamentos"
-            console.log("Retornou à aba 'Andamentos'."); // Log para depuração
         }
     }
 
     // Função principal para verificar a URL
     function main() {
         if (window.location.href.includes('/pedido')) {
-            console.log("URL contém '/pedido'."); // Log para depuração
             checkDetalhesTab();
         } else {
             abaDetalhesAcessada = false; // Reseta a variável quando não está na página de pedidos
