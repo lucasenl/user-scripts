@@ -1,11 +1,8 @@
 // ==UserScript==
 // @name         Atualiza Título de Matrícula
-// @namespace    http://tampermonkey.net/
+// @include      *://cidf.lumera.com.br/*
+// @match        *://cidf.lumera.com.br/*
 // @version      0.1
-// @description  Acessa a aba Detalhes e atualiza o título com informações da matrícula corretamente formatadas.
-// @author       Seu Nome
-// @match        https://cidf.lumera.com.br/pedido*
-// @grant        none
 // ==/UserScript==
 
 (function () {
