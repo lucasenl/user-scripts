@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          Tweaks Lumera BETA
-// @version       0.0.1
+// @version       0.0.2
 // @namespace     lucsenl
 // @description   Small adjustments to the CEC/RN.
 // @author        lucsenl
@@ -17,7 +17,7 @@
 // @downloadURL   https://gitlab.com/lucsenl/userscript/-/raw/main/conecta.user.js
 // ==/UserScript==
 
-(function () {
+(function() {
     'use strict';
 
     // Adiciona variáveis CSS
@@ -40,33 +40,91 @@
         }
     `);
 
-    const hideSelectors = [
-        "vaadin-tabs > vaadin-tab:nth-child(1) > div > label:nth-child(3)",
-        "vaadin-tabs > vaadin-tab:nth-child(2) > div > label:nth-child(3)",
-        "vaadin-tabs > vaadin-tab:nth-child(3) > div > label:nth-child(3)",
-        "vaadin-tabs > vaadin-tab:nth-child(4) > div > label:nth-child(3)",
-        "vaadin-tabs > vaadin-tab:nth-child(5) > div > label:nth-child(3)",
-        "#gridPedidos > vaadin-grid-cell-content:nth-child(261) > vaadin-grid-sorter"
-    ];
+    // Variáveis globais
+    let abaDetalhesAcessada = false; // Controle de acesso à aba "Detalhes"
 
-    const tabSelectors = [
-        "vaadin-tabs > vaadin-tab:nth-child(1) > div",
-        "vaadin-tabs > vaadin-tab:nth-child(2) > div",
-        "vaadin-tabs > vaadin-tab:nth-child(3) > div",
-        "vaadin-tabs > vaadin-tab:nth-child(4) > div",
-        "vaadin-tabs > vaadin-tab:nth-child(5) > div"
-    ];
+    // Função para detectar o navegador
+    function detectBrowser() {
+        const userAgent = navigator.userAgent;
+        if (userAgent.indexOf("Firefox") !== -1) {
+            return "Firefox";
+        } else if (userAgent.indexOf("Edg") !== -1 || userAgent.indexOf("Edge") !== -1) {
+            return "Edge";
+        } else if (userAgent.indexOf("Chrome") !== -1) {
+            return "Chrome";
+        }
+        return "Other";
+    }
 
-    const textUpdates = [
-        { selector: "vaadin-tabs > vaadin-tab:nth-child(1) > div > label:nth-child(2)", newText: 'Pedidos em aberto' },
-        { selector: "vaadin-tabs > vaadin-tab:nth-child(2) > div > label:nth-child(2)", newText: 'Fora do prazo' },
-        { selector: "vaadin-tabs > vaadin-tab:nth-child(3) > div > label:nth-child(2)", newText: 'Aguardando interação' },
-        { selector: "vaadin-tabs > vaadin-tab:nth-child(4) > div > label:nth-child(2)", newText: 'Aguardando o solicitante' },
-        { selector: "body > div.root > div.root__row > div.navi-drawer > div.navi-drawer__content > div.navi-drawer__scroll-area > div > div:nth-child(7) > a > label", newText: 'Detran' }
-    ];
+    // Função para remover o estilo hidden
+    function removeHiddenElement() {
+        let hiddenElement;
+        const browser = detectBrowser();
+
+        if (browser === "Firefox") {
+            hiddenElement = $("body > div:nth-child(6) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)");
+        } else if (browser === "Chrome" || browser === "Edge") {
+            hiddenElement = $("body > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)");
+        }
+
+        if (hiddenElement.length > 0) {
+            hiddenElement.css({
+                display: 'flex',
+                flexDirection: 'column',
+                visibility: 'visible',
+                opacity: '1'
+            }).removeAttr('hidden');
+
+            hiddenElement[0].style.setProperty('display', 'flex', 'important');
+            hiddenElement[0].style.setProperty('visibility', 'visible', 'important');
+            hiddenElement[0].style.setProperty('opacity', '1', 'important');
+        }
+    }
+
+    // Função para mover o conteúdo
+    function moverConteudo() {
+        const origem = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(2)");
+        const destino = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(1)");
+
+        if (origem.length > 0 && destino.length > 0) {
+            destino.append(origem.children().first());
+        }
+    }
+
+    // Função para verificar quando a aba "Detalhes" foi acessada
+    function checkDetalhesTab() {
+        const detalhesTab = $("vaadin-tab[aria-selected='false']:nth-child(2)");
+        if (detalhesTab.length > 0 && !abaDetalhesAcessada) {
+            detalhesTab[0].click();
+            abaDetalhesAcessada = true;
+
+            setTimeout(() => {
+                removeHiddenElement();
+                moverConteudo();
+                returnToAndamentosTab();
+            }, 1000);
+        }
+    }
+
+    // Função para retornar à aba "Andamentos"
+    function returnToAndamentosTab() {
+        const andamentosTab = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > vaadin-tabs > vaadin-tab:nth-child(1)");
+        if (andamentosTab.length > 0) {
+            andamentosTab[0].click();
+        }
+    }
 
     // Função para ocultar elementos
     function hideElements() {
+        const hideSelectors = [
+            "vaadin-tabs > vaadin-tab:nth-child(1) > div > label:nth-child(3)",
+            "vaadin-tabs > vaadin-tab:nth-child(2) > div > label:nth-child(3)",
+            "vaadin-tabs > vaadin-tab:nth-child(3) > div > label:nth-child(3)",
+            "vaadin-tabs > vaadin-tab:nth-child(4) > div > label:nth-child(3)",
+            "vaadin-tabs > vaadin-tab:nth-child(5) > div > label:nth-child(3)",
+            "#gridPedidos > vaadin-grid-cell-content:nth-child(261) > vaadin-grid-sorter"
+        ];
+
         hideSelectors.forEach(selector => {
             const element = $(selector);
             if (element.length && !element.data('hidden')) {
@@ -79,6 +137,14 @@
 
     // Função para aplicar estilos
     function applyStyles() {
+        const tabSelectors = [
+            "vaadin-tabs > vaadin-tab:nth-child(1) > div",
+            "vaadin-tabs > vaadin-tab:nth-child(2) > div",
+            "vaadin-tabs > vaadin-tab:nth-child(3) > div",
+            "vaadin-tabs > vaadin-tab:nth-child(4) > div",
+            "vaadin-tabs > vaadin-tab:nth-child(5) > div"
+        ];
+
         tabSelectors.forEach(selector => {
             const elements = $(selector);
             elements.each((_, el) => {
@@ -116,6 +182,14 @@
 
     // Função para alterar texto
     function changeText() {
+        const textUpdates = [
+            { selector: "vaadin-tabs > vaadin-tab:nth-child(1) > div > label:nth-child(2)", newText: 'Pedidos em aberto' },
+            { selector: "vaadin-tabs > vaadin-tab:nth-child(2) > div > label:nth-child(2)", newText: 'Fora do prazo' },
+            { selector: "vaadin-tabs > vaadin-tab:nth-child(3) > div > label:nth-child(2)", newText: 'Aguardando interação' },
+            { selector: "vaadin-tabs > vaadin-tab:nth-child(4) > div > label:nth-child(2)", newText: 'Aguardando o solicitante' },
+            { selector: "body > div.root > div.root__row > div.navi-drawer > div.navi-drawer__content > div.navi-drawer__scroll-area > div > div:nth-child(7) > a > label", newText: 'Detran' }
+        ];
+
         textUpdates.forEach(({ selector, newText }) => {
             const element = $(selector);
             if (element.length && element.text() !== newText) {
@@ -127,6 +201,12 @@
 
     // Função principal que aplica estilos, oculta elementos e altera texto
     function main() {
+        if (window.location.href.includes('/pedido')) {
+            checkDetalhesTab();
+        } else {
+            abaDetalhesAcessada = false; // Reseta a variável quando não está na página de pedidos
+        }
+
         hideElements();
         applyStyles();
         changeText();
