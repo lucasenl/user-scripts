@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Mover Elemento Após Detalhes
 // @namespace    http://tampermonkey.net/
-// @version      0.0.2
+// @version      0.0.3
 // @description  Move conteúdo de uma aba para outra após clicar em detalhes, removendo elementos ocultos
 // @match        https://cidf.lumera.com.br/*
 // @grant        none
