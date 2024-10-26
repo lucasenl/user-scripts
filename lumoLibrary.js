@@ -1,5 +1,3 @@
-// rev. fix title
-
 (function() {
     'use strict';
 
@@ -14,29 +12,12 @@
 
     // Função para modificar o título
     function modifyTitle() {
-        const valorElement1 = document.evaluate(
-            '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div[3]/div[2]/vaadin-form-layout/div[3]/div/label[1]',
-            document,
-            null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE,
-            null
-        ).singleNodeValue;
-
-        const valorElement2 = document.evaluate(
-            '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div[4]/div[2]/vaadin-form-layout/div[3]/div/label[1]',
-            document,
-            null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE,
-            null
-        ).singleNodeValue;
+        const valorElement1 = getValorElement(3); // Pega valor do primeiro elemento
+        const valorElement2 = getValorElement(4); // Pega valor do segundo elemento
 
         let valores = [];
-        if (valorElement1 && isNumeric(valorElement1.textContent.trim())) {
-            valores.push(valorElement1.textContent.trim());
-        }
-        if (valorElement2 && isNumeric(valorElement2.textContent.trim())) {
-            valores.push(valorElement2.textContent.trim());
-        }
+        if (valorElement1) valores.push(valorElement1);
+        if (valorElement2) valores.push(valorElement2);
 
         const tituloElement = document.querySelector("body > div.root > div.root__row > div.root__column > div.app-header-inner > div > div.app-bar__container > h5");
 
@@ -51,31 +32,27 @@
         }
     }
 
+    // Função para obter o valor de um elemento específico
+    function getValorElement(index) {
+        const valorElement = document.evaluate(
+            `/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div[${index}]/div[2]/vaadin-form-layout/div[3]/div/label[1]`,
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+        ).singleNodeValue;
+
+        return valorElement && isNumeric(valorElement.textContent.trim()) ? valorElement.textContent.trim() : null;
+    }
+
     // Função para reafirmar o título
     function fixTitle() {
-        const valorElement1 = document.evaluate(
-            '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div[3]/div[2]/vaadin-form-layout/div[3]/div/label[1]',
-            document,
-            null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE,
-            null
-        ).singleNodeValue;
-
-        const valorElement2 = document.evaluate(
-            '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div[4]/div[2]/vaadin-form-layout/div[3]/div/label[1]',
-            document,
-            null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE,
-            null
-        ).singleNodeValue;
+        const valorElement1 = getValorElement(3); // Pega valor do primeiro elemento
+        const valorElement2 = getValorElement(4); // Pega valor do segundo elemento
 
         let valores = [];
-        if (valorElement1 && isNumeric(valorElement1.textContent.trim())) {
-            valores.push(valorElement1.textContent.trim());
-        }
-        if (valorElement2 && isNumeric(valorElement2.textContent.trim())) {
-            valores.push(valorElement2.textContent.trim());
-        }
+        if (valorElement1) valores.push(valorElement1);
+        if (valorElement2) valores.push(valorElement2);
 
         const tituloElement = document.querySelector("body > div.root > div.root__row > div.root__column > div.app-header-inner > div > div.app-bar__container > h5");
         if (tituloElement && tituloModificado) {
@@ -95,30 +72,6 @@
         return contains;
     }
 
-    // Função para verificar quando a aba "Detalhes" foi acessada
-    function checkDetalhesTab() {
-        const detalhesTab = document.querySelector('vaadin-tab[aria-selected="false"]:nth-child(2)');
-        if (detalhesTab && !abaDetalhesAcessada) {
-            detalhesTab.click(); // Clica na aba "Detalhes"
-            abaDetalhesAcessada = true;
-
-            setTimeout(() => {
-                modifyTitle(); // Modifica o título
-                returnToInitialTab(); // Retorna à aba inicial após modificar o título
-            }, 1000);
-            console.log("Aba 'Detalhes' acessada."); // Log para depuração
-        }
-    }
-
-    // Função para retornar à aba inicial
-    function returnToInitialTab() {
-        const initialTab = document.querySelector("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > vaadin-tabs > vaadin-tab:nth-child(1)");
-        if (initialTab) {
-            initialTab.click(); // Clica na aba inicial
-            console.log("Retornou à aba inicial."); // Log para depuração
-        }
-    }
-
     // Função principal para verificar a URL
     function main() {
         if (window.location.href.includes('/pedido')) {
@@ -131,7 +84,7 @@
                     }, 500); // Recarrega após meio segundo
                     return; // Interrompe a execução
                 }
-                checkDetalhesTab();
+                modifyTitle(); // Modifica o título diretamente, sem clicar na aba
             } else {
                 console.log("Título não contém 'Inteiro Teor de Matrícula'."); // Log para depuração
             }
