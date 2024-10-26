@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          Tweaks Lumera BETA
-// @version       0.0.4
+// @version       0.0.5
 // @namespace     lucsenl
 // @description   Small adjustments to the CEC/RN.
 // @author        lucsenl
@@ -10,6 +10,7 @@
 // @grant         GM_addStyle
 // @inject-into   page
 // @require       https://cdnjs.cloudflare.com/ajax/libs/cash/8.1.5/cash.min.js
+// @require       https://raw.githubusercontent.com/lucsenl/userscript/refs/heads/beta/lumo.js
 // @icon          https://s3.amazonaws.com/movidesk-files/B71B720D3B852CFC60CDED5090E658E3
 // @license       0BSD
 // @copyright     2024, lucsenl
