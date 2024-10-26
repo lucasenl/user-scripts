@@ -1,7 +1,14 @@
-// rev.3
+// ==UserScript==
+// @name         Atualiza Título de Matrícula
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  Acessa a aba Detalhes e atualiza o título com informações da matrícula corretamente formatadas.
+// @author       Seu Nome
+// @match        https://cidf.lumera.com.br/pedido*
+// @grant        none
+// ==/UserScript==
 
-// atualizaTitulo.js
-(function(global) {
+(function () {
     'use strict';
 
     let abaDetalhesAcessada = false; // Controle de acesso à aba "Detalhes"
@@ -11,7 +18,7 @@
         return !isNaN(value) && !isNaN(parseFloat(value));
     }
 
-    // Função para modificar o título
+    // Função para modificar o título de acordo com as regras definidas
     function modifyTitle() {
         const valorElement1 = document.evaluate(
             '/html/body/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div[3]/div[2]/vaadin-form-layout/div[3]/div/label[1]',
@@ -42,16 +49,24 @@
         );
 
         if (tituloElement && valores.length > 0) {
-            const tituloAtual = tituloElement.textContent;
-            const regex = /Matrícula\b(.*)$/i;
+            const tituloAtual = tituloElement.textContent.trim();
+            const regexInteiroTeor = /Inteiro Teor de Matrícula\b/i;
+            const regexOnusAlienacao = /Ônus e Alienação\b/i;
+            const numeroMatricula = valores.join(', ');
 
-            const novoTitulo = regex.test(tituloAtual)
-                ? tituloAtual.replace(regex, `Matrícula nº ${valores.join(', ')}`)
-                : `${tituloAtual} nº ${valores.join(', ')}`;
+            let novoTitulo;
+
+            if (regexInteiroTeor.test(tituloAtual)) {
+                novoTitulo = `${tituloAtual} nº ${numeroMatricula}`;
+            } else if (regexOnusAlienacao.test(tituloAtual)) {
+                novoTitulo = `${tituloAtual} matrícula nº ${numeroMatricula}`;
+            } else {
+                novoTitulo = tituloAtual; // Mantém o título inalterado se não corresponder aos padrões
+            }
 
             if (tituloAtual !== novoTitulo) {
                 tituloElement.textContent = novoTitulo;
-                console.log("Título modificado:", novoTitulo);
+                console.log("Título modificado:", novoTitulo); // Log para depuração
             }
         }
     }
@@ -60,14 +75,14 @@
     function checkDetalhesTab() {
         const detalhesTab = document.querySelector('vaadin-tab[aria-selected="false"]:nth-child(2)');
         if (detalhesTab && !abaDetalhesAcessada) {
-            detalhesTab.click();
+            detalhesTab.click(); // Clica na aba "Detalhes"
             abaDetalhesAcessada = true;
 
             setTimeout(() => {
-                modifyTitle();
-                returnToInitialTab();
+                modifyTitle(); // Modifica o título após acessar a aba
+                returnToInitialTab(); // Retorna à aba inicial após modificar o título
             }, 1000);
-            console.log("Aba 'Detalhes' acessada.");
+            console.log("Aba 'Detalhes' acessada."); // Log para depuração
         }
     }
 
@@ -77,28 +92,31 @@
             "body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > vaadin-tabs > vaadin-tab:nth-child(1)"
         );
         if (initialTab) {
-            initialTab.click();
-            console.log("Retornou à aba inicial.");
+            initialTab.click(); // Clica na aba inicial
+            console.log("Retornou à aba inicial."); // Log para depuração
         }
     }
 
     // Função principal
     function main() {
         if (window.location.href.includes('/pedido')) {
-            console.log("URL contém '/pedido'.");
-            checkDetalhesTab();
+            console.log("URL contém '/pedido'."); // Log para depuração
+            checkDetalhesTab(); // Verifica se a aba "Detalhes" foi acessada
         } else {
-            abaDetalhesAcessada = false;
+            abaDetalhesAcessada = false; // Reseta a variável quando não está na página de pedidos
         }
     }
 
     // Inicializa o script
     function init() {
         const observer = new MutationObserver(() => {
-            main();
+            main(); // Executa a função principal em mudanças
         });
 
+        // Observa o body para quaisquer mudanças
         observer.observe(document.body, { childList: true, subtree: true });
+
+        // Executa a função principal inicialmente
         main();
     }
 
@@ -108,10 +126,4 @@
     } else {
         init();
     }
-
-    // Expondo a função para ser utilizada em outros scripts
-    global.atualizaTituloMatricula = {
-        init: init
-    };
-
-})(window);
+})();
