@@ -1,11 +1,10 @@
-// rev.2
+// rev.3
 
-(function() {
+// atualizaTitulo.js
+(function(global) {
     'use strict';
 
-    const FIRST_LOAD_KEY = 'firstLoadPedido'; // Chave para localStorage
     let abaDetalhesAcessada = false; // Controle de acesso à aba "Detalhes"
-    let tituloModificado = false; // Controle se o título já foi modificado
 
     // Função para verificar se uma string é numérica
     function isNumeric(value) {
@@ -38,53 +37,68 @@
             valores.push(valorElement2.textContent.trim());
         }
 
-        const tituloElement = document.querySelector("body > div.root > div.root__row > div.root__column > div.app-header-inner > div > div.app-bar__container > h5");
+        const tituloElement = document.querySelector(
+            'body > div.root > div.root__row > div.root__column > div.app-header-inner > div > div.app-bar__container > h5'
+        );
 
         if (tituloElement && valores.length > 0) {
-            const novoTitulo = `Inteiro Teor Matrícula nº ${valores.join(', ')}`;
-            if (tituloElement.textContent !== novoTitulo) {
-                tituloElement.textContent = novoTitulo; // Atualiza o texto do título
-                tituloModificado = true; // Marca que o título foi modificado
-                console.log("Título modificado:", novoTitulo); // Log para depuração
+            const tituloAtual = tituloElement.textContent;
+            const regex = /Matrícula\b(.*)$/i;
+
+            const novoTitulo = regex.test(tituloAtual)
+                ? tituloAtual.replace(regex, `Matrícula nº ${valores.join(', ')}`)
+                : `${tituloAtual} nº ${valores.join(', ')}`;
+
+            if (tituloAtual !== novoTitulo) {
+                tituloElement.textContent = novoTitulo;
+                console.log("Título modificado:", novoTitulo);
             }
         }
     }
 
-    // Função para verificar se o título contém "Inteiro Teor de Matrícula"
-    function titleContainsInteiroTeor() {
-        const tituloElement = document.querySelector("body > div.root > div.root__row > div.root__column > div.app-header-inner > div > div.app-bar__container > h5");
-        return tituloElement && tituloElement.textContent.includes('Inteiro Teor de Matrícula');
+    // Função para verificar quando a aba "Detalhes" foi acessada
+    function checkDetalhesTab() {
+        const detalhesTab = document.querySelector('vaadin-tab[aria-selected="false"]:nth-child(2)');
+        if (detalhesTab && !abaDetalhesAcessada) {
+            detalhesTab.click();
+            abaDetalhesAcessada = true;
+
+            setTimeout(() => {
+                modifyTitle();
+                returnToInitialTab();
+            }, 1000);
+            console.log("Aba 'Detalhes' acessada.");
+        }
     }
 
-    // Função principal para verificar a URL
+    // Função para retornar à aba inicial
+    function returnToInitialTab() {
+        const initialTab = document.querySelector(
+            "body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > vaadin-tabs > vaadin-tab:nth-child(1)"
+        );
+        if (initialTab) {
+            initialTab.click();
+            console.log("Retornou à aba inicial.");
+        }
+    }
+
+    // Função principal
     function main() {
         if (window.location.href.includes('/pedido')) {
-            console.log("URL contém '/pedido'."); // Log para depuração
-            if (titleContainsInteiroTeor()) {
-                modifyTitle(); // Chama a função para modificar o título
-            } else {
-                console.log("Título não contém 'Inteiro Teor de Matrícula'."); // Log para depuração
-            }
+            console.log("URL contém '/pedido'.");
+            checkDetalhesTab();
         } else {
-            abaDetalhesAcessada = false; // Reseta a variável quando não está na página de pedidos
-            tituloModificado = false; // Reseta a variável de título modificado
+            abaDetalhesAcessada = false;
         }
     }
 
     // Inicializa o script
     function init() {
         const observer = new MutationObserver(() => {
-            main(); // Executa a função principal em mudanças
+            main();
         });
 
-        // Observa o body para quaisquer mudanças
         observer.observe(document.body, { childList: true, subtree: true });
-
-        // Escuta eventos de histórico para mudanças de URL
-        window.addEventListener('popstate', main);
-        window.addEventListener('hashchange', main);
-
-        // Executa a função principal inicialmente
         main();
     }
 
@@ -94,4 +108,10 @@
     } else {
         init();
     }
-})();
+
+    // Expondo a função para ser utilizada em outros scripts
+    global.atualizaTituloMatricula = {
+        init: init
+    };
+
+})(window);
