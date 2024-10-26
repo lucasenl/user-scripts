@@ -37,6 +37,7 @@
             --lumo-primary-color: hsl(216, 92%, 66%);
             --lumo-base-color: hsl(240, 21%, 15%);
             --lumo-border-radius: 0.9em;
+            will-change: transform, opacity;
         }
     `);
 
@@ -56,18 +57,39 @@
         return "Other";
     }
 
+    // Função para tentar encontrar um elemento usando uma lista de seletores
+    function findElement(selectors) {
+        for (const selector of selectors) {
+            const element = $(selector);
+            if (element.length > 0) {
+                return element; // Retorna o primeiro elemento encontrado
+            }
+        }
+        return null; // Retorna null se nenhum elemento for encontrado
+    }
+
     // Função para remover o estilo hidden
     function removeHiddenElement() {
         let hiddenElement;
         const browser = detectBrowser();
 
+        // Seletores para o elemento hidden
         if (browser === "Firefox") {
-            hiddenElement = $("body > div:nth-child(6) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)");
+            const firefoxSelectors = [
+                "body > div:nth-child(6) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
+                "body > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
+            ];
+            hiddenElement = findElement(firefoxSelectors);
         } else if (browser === "Chrome" || browser === "Edge") {
-            hiddenElement = $("body > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)");
+            const chromeEdgeSelectors = [
+                "body > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
+                // Adicione mais seletores se necessário
+            ];
+            hiddenElement = findElement(chromeEdgeSelectors);
         }
 
-        if (hiddenElement.length > 0) {
+        // Aplica os estilos e remove o hidden se o elemento for encontrado
+        if (hiddenElement) {
             hiddenElement.css({
                 display: 'flex',
                 flexDirection: 'column',
@@ -78,6 +100,9 @@
             hiddenElement[0].style.setProperty('display', 'flex', 'important');
             hiddenElement[0].style.setProperty('visibility', 'visible', 'important');
             hiddenElement[0].style.setProperty('opacity', '1', 'important');
+            console.log("Elemento hidden removido e estilos aplicados.");
+        } else {
+            console.log("Elemento não encontrado.");
         }
     }
 
@@ -102,7 +127,7 @@
                 removeHiddenElement();
                 moverConteudo();
                 returnToAndamentosTab();
-            }, 500); // Diminui o tempo de espera para 500ms
+            }, 700); // Diminui o tempo de espera para 500ms
         }
     }
 
