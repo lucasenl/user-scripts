@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          Tweaks Lumera BETA
-// @version       0.0.3
+// @version       0.0.4
 // @namespace     lucsenl
 // @description   Small adjustments to the CEC/RN.
 // @author        lucsenl
@@ -113,6 +113,9 @@
 
         if (origem.length > 0 && destino.length > 0) {
             destino.append(origem.children().first());
+            console.log("Conteúdo movido com sucesso.");
+        } else {
+            console.log("Origem ou destino não encontrado para mover o conteúdo.");
         }
     }
 
@@ -123,11 +126,18 @@
             detalhesTab[0].click();
             abaDetalhesAcessada = true;
 
+            // Diminui o tempo de espera para 500ms
             setTimeout(() => {
-                removeHiddenElement();
-                moverConteudo();
-                returnToAndamentosTab();
-            }, 700); // Diminui o tempo de espera para 500ms
+                // Verifica se o elemento de origem agora está visível
+                const origem = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(2)");
+                if (origem.length > 0) {
+                    removeHiddenElement();
+                    moverConteudo();
+                    returnToAndamentosTab();
+                } else {
+                    console.log("Conteúdo ainda não disponível após clicar na aba 'Detalhes'.");
+                }
+            }, 500); // Tempo de espera para permitir que o conteúdo seja carregado
         }
     }
 
