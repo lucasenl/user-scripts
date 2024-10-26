@@ -5,6 +5,9 @@
 // @description  Move conteúdo de uma aba para outra após clicar em detalhes, removendo elementos ocultos
 // @match        https://cidf.lumera.com.br/*
 // @grant        none
+// @downloadURL  https://raw.githubusercontent.com/lucsenl/userscript/refs/heads/beta/lumera-beta.user.js
+// @updateURL    https://raw.githubusercontent.com/lucsenl/userscript/refs/heads/beta/lumera-beta.user.js
+
 // ==/UserScript==
 
 (function() {
