@@ -80,7 +80,7 @@
                 if (!localStorage.getItem(FIRST_LOAD_KEY)) {
                     localStorage.setItem(FIRST_LOAD_KEY, 'true');
                     setTimeout(() => {
-                        location.reload(); // Recarrega a página
+                        // location.reload(); // Recarrega a página
                     }, 500); // Recarrega após meio segundo
                     return; // Interrompe a execução
                 }
