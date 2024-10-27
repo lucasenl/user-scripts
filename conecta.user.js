@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          Tweaks Lumera BETA
-// @version       0.0.5
+// @version       0.0.6
 // @namespace     lucsenl
 // @description   Small adjustments to the CEC/RN.
 // @author        lucsenl
@@ -9,8 +9,7 @@
 // @run-at        document-end
 // @grant         GM_addStyle
 // @inject-into   page
-// @require       https://cdnjs.cloudflare.com/ajax/libs/cash/8.1.5/cash.min.js
-// @require       https://raw.githubusercontent.com/lucsenl/userscript/refs/heads/beta/catch.js
+// @require       https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @icon          https://s3.amazonaws.com/movidesk-files/B71B720D3B852CFC60CDED5090E658E3
 // @license       0BSD
 // @copyright     2024, lucsenl
@@ -43,16 +42,16 @@
     `);
 
     // Variáveis globais
-    let abaDetalhesAcessada = false; // Controle de acesso à aba "Detalhes"
+    let abaDetalhesAcessada = false;
 
     // Função para detectar o navegador
     function detectBrowser() {
         const userAgent = navigator.userAgent;
-        if (userAgent.indexOf("Firefox") !== -1) {
+        if (userAgent.includes("Firefox")) {
             return "Firefox";
-        } else if (userAgent.indexOf("Edg") !== -1 || userAgent.indexOf("Edge") !== -1) {
+        } else if (userAgent.includes("Edg") || userAgent.includes("Edge")) {
             return "Edge";
-        } else if (userAgent.indexOf("Chrome") !== -1) {
+        } else if (userAgent.includes("Chrome")) {
             return "Chrome";
         }
         return "Other";
@@ -62,31 +61,28 @@
     function findElement(selectors) {
         for (const selector of selectors) {
             const element = $(selector);
-            if (element.length > 0) {
-                return element; // Retorna o primeiro elemento encontrado
+            if (element.length) {
+                return element;
             }
         }
-        return null; // Retorna null se nenhum elemento for encontrado
+        return null;
     }
 
     // Função para remover o estilo hidden
     function removeHiddenElement() {
-        let hiddenElement;
         const browser = detectBrowser();
+        let hiddenElement;
 
         // Seletores para o elemento hidden
         if (browser === "Firefox") {
-            const firefoxSelectors = [
+            hiddenElement = findElement([
                 "body > div:nth-child(6) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
                 "body > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
-            ];
-            hiddenElement = findElement(firefoxSelectors);
+            ]);
         } else if (browser === "Chrome" || browser === "Edge") {
-            const chromeEdgeSelectors = [
+            hiddenElement = findElement([
                 "body > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
-                // Adicione mais seletores se necessário
-            ];
-            hiddenElement = findElement(chromeEdgeSelectors);
+            ]);
         }
 
         // Aplica os estilos e remove o hidden se o elemento for encontrado
@@ -97,10 +93,6 @@
                 visibility: 'visible',
                 opacity: '1'
             }).removeAttr('hidden');
-
-            hiddenElement[0].style.setProperty('display', 'flex', 'important');
-            hiddenElement[0].style.setProperty('visibility', 'visible', 'important');
-            hiddenElement[0].style.setProperty('opacity', '1', 'important');
             console.log("Elemento hidden removido e estilos aplicados.");
         } else {
             console.log("Elemento não encontrado.");
@@ -112,7 +104,7 @@
         const origem = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(2)");
         const destino = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(1)");
 
-        if (origem.length > 0 && destino.length > 0) {
+        if (origem.length && destino.length) {
             destino.append(origem.children().first());
             console.log("Conteúdo movido com sucesso.");
         } else {
@@ -123,30 +115,29 @@
     // Função para verificar quando a aba "Detalhes" foi acessada
     function checkDetalhesTab() {
         const detalhesTab = $("vaadin-tab[aria-selected='false']:nth-child(2)");
-        if (detalhesTab.length > 0 && !abaDetalhesAcessada) {
-            detalhesTab[0].click();
+        if (detalhesTab.length && !abaDetalhesAcessada) {
+            detalhesTab.click();
             abaDetalhesAcessada = true;
 
             // Diminui o tempo de espera para 500ms
             setTimeout(() => {
-                // Verifica se o elemento de origem agora está visível
                 const origem = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(2)");
-                if (origem.length > 0) {
+                if (origem.length) {
                     removeHiddenElement();
                     moverConteudo();
                     returnToAndamentosTab();
                 } else {
                     console.log("Conteúdo ainda não disponível após clicar na aba 'Detalhes'.");
                 }
-            }, 500); // Tempo de espera para permitir que o conteúdo seja carregado
+            }, 500);
         }
     }
 
     // Função para retornar à aba "Andamentos"
     function returnToAndamentosTab() {
         const andamentosTab = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > vaadin-tabs > vaadin-tab:nth-child(1)");
-        if (andamentosTab.length > 0) {
-            andamentosTab[0].click();
+        if (andamentosTab.length) {
+            andamentosTab.click();
         }
     }
 
@@ -183,8 +174,8 @@
 
         tabSelectors.forEach(selector => {
             const elements = $(selector);
-            elements.each((_, el) => {
-                const $el = $(el);
+            elements.each(function() {
+                const $el = $(this);
                 if (!$el.data('styled')) {
                     $el.css({ flexDirection: 'row', width: '280px' });
                     $el.find('label').css('marginRight', '8px');
