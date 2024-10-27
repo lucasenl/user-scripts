@@ -9,7 +9,7 @@
 // @run-at        document-end
 // @grant         GM_addStyle
 // @inject-into   page
-// @require       https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js
+// @require       https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js
 // @icon          https://s3.amazonaws.com/movidesk-files/B71B720D3B852CFC60CDED5090E658E3
 // @license       0BSD
 // @copyright     2024, lucsenl
