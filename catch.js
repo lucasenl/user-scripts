@@ -2,7 +2,7 @@
 // @name         catch
 // @include      *://cidf.lumera.com.br/*
 // @match        *://cidf.lumera.com.br/*
-// @version      0.1
+// @version      0.0.1
 // ==/UserScript==
 
 (function () {
