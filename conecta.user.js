@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          Tweaks Lumera BETA
-// @version       0.0.6
+// @version       0.0.7
 // @namespace     lucsenl
 // @description   Small adjustments to the CEC/RN.
 // @author        lucsenl
@@ -101,14 +101,20 @@
 
     // Função para mover o conteúdo
     function moverConteudo() {
-        const origem = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(2)");
-        const destino = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(1)");
+        const origem = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-of-type(2)");
+        const destino = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-of-type(1)");
 
         if (origem.length && destino.length) {
-            destino.append(origem.children().first());
+            // Move todos os filhos do elemento origem para o destino
+            destino.append(origem.children());
             console.log("Conteúdo movido com sucesso.");
         } else {
-            console.log("Origem ou destino não encontrado para mover o conteúdo.");
+            if (!origem.length) {
+                console.log("Origem não encontrada.");
+            }
+            if (!destino.length) {
+                console.log("Destino não encontrado.");
+            }
         }
     }
 
@@ -121,7 +127,7 @@
 
             // Diminui o tempo de espera para 500ms
             setTimeout(() => {
-                const origem = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-child(2)");
+                const origem = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-of-type(2)");
                 if (origem.length) {
                     removeHiddenElement();
                     moverConteudo();
