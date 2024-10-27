@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         lumo
+// @name         catch
 // @include      *://cidf.lumera.com.br/*
 // @match        *://cidf.lumera.com.br/*
 // @version      0.1
