@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          Tweaks Lumera BETA
-// @version       0.0.7
+// @version       0.0.8
 // @namespace     lucsenl
 // @description   Small adjustments to the CEC/RN.
 // @author        lucsenl
@@ -99,22 +99,21 @@
         }
     }
 
-    // Função para mover o conteúdo
-    function moverConteudo() {
+    // Função para copiar o conteúdo e mantê-lo
+    function copiarConteudoPermanente() {
         const origem = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-of-type(2)");
         const destino = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-of-type(1)");
 
         if (origem.length && destino.length) {
-            // Move todos os filhos do elemento origem para o destino
-            destino.append(origem.children());
-            console.log("Conteúdo movido com sucesso.");
+            // Clona o conteúdo de origem e adiciona ao destino se ainda não existir
+            if (destino.children('.copia-conteudo').length === 0) {
+                destino.append(origem.children().clone().addClass('copia-conteudo'));
+                console.log("Conteúdo copiado com sucesso.");
+            } else {
+                console.log("O conteúdo de destino já está preenchido.");
+            }
         } else {
-            if (!origem.length) {
-                console.log("Origem não encontrada.");
-            }
-            if (!destino.length) {
-                console.log("Destino não encontrado.");
-            }
+            console.log("Origem ou destino não encontrado.");
         }
     }
 
@@ -130,7 +129,7 @@
                 const origem = $("body > div.root > div.root__row > div.root__column > div.root__view-container > div > div.view-frame__content > div > div:nth-of-type(2)");
                 if (origem.length) {
                     removeHiddenElement();
-                    moverConteudo();
+                    copiarConteudoPermanente();
                     returnToAndamentosTab();
                 } else {
                     console.log("Conteúdo ainda não disponível após clicar na aba 'Detalhes'.");
@@ -250,7 +249,10 @@
         main();
 
         // MutationObserver para alterações no DOM
-        const observer = new MutationObserver(() => main());
+        const observer = new MutationObserver(() => {
+            copiarConteudoPermanente(); // Copia conteúdo sempre que houver mutação
+            main();
+        });
         observer.observe(document.body, { childList: true, subtree: true, attributes: true });
     }
 
