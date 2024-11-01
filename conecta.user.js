@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          Tweaks Lumera BETA
-// @version       0.0.8
+// @version       0.0.9
 // @namespace     lucsenl
 // @description   Small adjustments to the CEC/RN.
 // @author        lucsenl
@@ -93,9 +93,6 @@
                 visibility: 'visible',
                 opacity: '1'
             }).removeAttr('hidden');
-            console.log("Elemento hidden removido e estilos aplicados.");
-        } else {
-            console.log("Elemento não encontrado.");
         }
     }
 
@@ -108,12 +105,15 @@
             // Clona o conteúdo de origem e adiciona ao destino se ainda não existir
             if (destino.children('.copia-conteudo').length === 0) {
                 destino.append(origem.children().clone().addClass('copia-conteudo'));
-                console.log("Conteúdo copiado com sucesso.");
-            } else {
-                console.log("O conteúdo de destino já está preenchido.");
             }
-        } else {
-            console.log("Origem ou destino não encontrado.");
+
+            // Mantém apenas os elementos com a classe h3, ou que contenham "Dados do apresentante" ou "Detalhes do serviço"
+            destino.children('.copia-conteudo').each(function() {
+                const $this = $(this);
+                if (!$this.hasClass('h3') && !$this.text().includes('Dados do apresentante') && !$this.text().includes('Detalhes do serviço')) {
+                    $this.hide(); // Esconde os outros filhos
+                }
+            });
         }
     }
 
@@ -131,8 +131,6 @@
                     removeHiddenElement();
                     copiarConteudoPermanente();
                     returnToAndamentosTab();
-                } else {
-                    console.log("Conteúdo ainda não disponível após clicar na aba 'Detalhes'.");
                 }
             }, 500);
         }
@@ -162,7 +160,6 @@
             if (element.length && !element.data('hidden')) {
                 element.hide();
                 element.data('hidden', true);
-                console.log(`Ocultado: ${selector}`);
             }
         });
     }
@@ -185,7 +182,6 @@
                     $el.css({ flexDirection: 'row', width: '280px' });
                     $el.find('label').css('marginRight', '8px');
                     $el.data('styled', true);
-                    console.log(`Estilo aplicado: ${selector}`);
                 }
             });
         });
@@ -194,21 +190,18 @@
         if (drawer.length && !drawer.data('styled')) {
             drawer.css('width', '170px');
             drawer.data('styled', true);
-            console.log('Estilo aplicado ao drawer');
         }
 
         const radioGroup = $('vaadin-radio-group');
         if (radioGroup.length && !radioGroup.data('styled')) {
             radioGroup.css('marginLeft', '10px');
             radioGroup.data('styled', true);
-            console.log('Estilo aplicado ao radio group');
         }
 
         const applyButton = $(`vaadin-button[aria-label="Aplicar"]`);
         if (applyButton.length && !applyButton.data('styled')) {
             applyButton.css('marginLeft', '0px');
             applyButton.data('styled', true);
-            console.log('Estilo aplicado ao botão Aplicar');
         }
     }
 
@@ -226,7 +219,6 @@
             const element = $(selector);
             if (element.length && element.text() !== newText) {
                 element.text(newText);
-                console.log(`Texto alterado em: ${selector} para "${newText}"`);
             }
         });
     }
